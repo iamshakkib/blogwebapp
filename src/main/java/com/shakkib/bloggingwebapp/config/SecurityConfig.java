@@ -4,6 +4,7 @@ import com.shakkib.bloggingwebapp.security.CustomUserDetailService;
 import com.shakkib.bloggingwebapp.security.JwtAuthenticationEntryPoint;
 import com.shakkib.bloggingwebapp.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     public static final String[] PUBLIC_URLS = {
@@ -48,8 +47,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(PUBLIC_URLS).permitAll() // Public URLs
-                        .requestMatchers(HttpMethod.GET).permitAll() // Allow GET requests
+                        .requestMatchers(PUBLIC_URLS).permitAll() // Allow access to public URLs
+                        .requestMatchers(HttpMethod.GET).permitAll() // Allow all GET requests (optional, adjust as needed)
                         .anyRequest().authenticated() // Secure all other requests
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -82,17 +81,28 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    public FilterRegistrationBean coresFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOriginPattern("*"); // Allow all origins
-        corsConfiguration.addAllowedHeader("*"); // Allow all headers
-        corsConfiguration.addAllowedMethod("*"); // Allow all methods
-        corsConfiguration.setMaxAge(3600L); // CORS preflight cache duration
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.addAllowedHeader("Authorization");
+        corsConfiguration.addAllowedHeader("Content-Type");
+        corsConfiguration.addAllowedHeader("Accept");
+        corsConfiguration.addAllowedMethod("POST");
+        corsConfiguration.addAllowedMethod("GET");
+        corsConfiguration.addAllowedMethod("DELETE");
+        corsConfiguration.addAllowedMethod("PUT");
+        corsConfiguration.addAllowedMethod("OPTIONS");
+        corsConfiguration.setMaxAge(3600L);
 
         source.registerCorsConfiguration("/**", corsConfiguration);
 
-        return new CorsFilter(source);
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+
+        bean.setOrder(-110);
+
+        return bean;
     }
 }

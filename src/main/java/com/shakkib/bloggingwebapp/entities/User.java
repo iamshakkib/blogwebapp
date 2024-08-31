@@ -59,11 +59,11 @@ public class User implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer userId) {
+    public void setId(int userId) {
         this.id = id;
     }
 

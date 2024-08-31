@@ -8,6 +8,7 @@ import com.shakkib.bloggingwebapp.helpers.DTOs.UserDTO;
 import com.shakkib.bloggingwebapp.repositories.RoleRepository;
 import com.shakkib.bloggingwebapp.repositories.UserRepository;
 import com.shakkib.bloggingwebapp.services.UserService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,11 +33,13 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
 
     @Override
+    @Transactional
     public UserDTO registerNewUser(UserDTO user) {
         User userEntity = this.modelMapper.map(user, User.class);
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         Role role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
         userEntity.getRoles().add(role);
+        this.roleRepository.save(role);
         User registeredUser = this.userRepository.save(userEntity);
         UserDTO registeredUserDTO = this.modelMapper.map(registeredUser,UserDTO.class);
         return registeredUserDTO;
