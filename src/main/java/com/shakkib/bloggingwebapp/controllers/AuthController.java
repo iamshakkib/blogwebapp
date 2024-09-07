@@ -20,11 +20,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -42,6 +39,9 @@ public class AuthController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
 	public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws Exception {
@@ -74,9 +74,9 @@ public class AuthController {
 	// register new user api
 
 	@PostMapping("/register")
-	public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO userDto) {
-		UserDTO registeredUser = this.userService.registerNewUser(userDto);
-		return new ResponseEntity<UserDTO>(registeredUser, HttpStatus.CREATED);
+	public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDto) {
+		String userGotRegisteredOrNot = this.userService.registerNewUser(userDto);
+		return new ResponseEntity<String>(userGotRegisteredOrNot, HttpStatus.CREATED);
 	}
 
 	// get loggedin user data
@@ -86,8 +86,8 @@ public class AuthController {
 	private ModelMapper mapper;
 
 	@GetMapping("/current-user/")
-	public ResponseEntity<UserDTO> getUser(Principal principal) {
-		User user = this.userRepository.findByEmail(principal.getName()).get();
+	public ResponseEntity<UserDTO> getUser(@RequestParam String email) {
+		User user = this.userRepository.findByEmail(email).get();
 		return new ResponseEntity<UserDTO>(this.mapper.map(user, UserDTO.class), HttpStatus.OK);
 	}
 

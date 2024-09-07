@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,15 +35,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO registerNewUser(UserDTO user) {
+    public String registerNewUser(UserDTO user) {
         User userEntity = this.modelMapper.map(user, User.class);
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         Role role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
         userEntity.getRoles().add(role);
         this.roleRepository.save(role);
         User registeredUser = this.userRepository.save(userEntity);
-        UserDTO registeredUserDTO = this.modelMapper.map(registeredUser,UserDTO.class);
-        return registeredUserDTO;
+        if(Objects.nonNull(registeredUser)) return AppConstants.SUCCESSFULLY_REGISTERED; else return AppConstants.REGISTRATION_FAILED;
     }
 
     @Override

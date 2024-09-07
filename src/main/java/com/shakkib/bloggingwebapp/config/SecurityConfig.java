@@ -30,7 +30,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SecurityConfig {
 
     public static final String[] PUBLIC_URLS = {
-            "/api/v1/auth/**",
+            "/api/v1/auth/register",
+            "/api/v1/auth/login",
             "/v3/api-docs",
             "/v2/api-docs",
             "/swagger-resources/**",

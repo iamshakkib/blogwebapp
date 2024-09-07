@@ -9,4 +9,7 @@ public class AppConstants {
 	public static final Integer NORMAL_USER = 502;
 	public static final Integer ADMIN_USER=501;
 
+	public static final String SUCCESSFULLY_REGISTERED="Registered to AIDACS";
+
+	public static final String REGISTRATION_FAILED="Registration failed, please try again regsitering yo AIDACS";
 }
