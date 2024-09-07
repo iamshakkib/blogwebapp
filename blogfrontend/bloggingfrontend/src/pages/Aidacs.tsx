@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { BACKEND_URL } from '../config';
 
 export const Aidacs: React.FC = () => {
     const [data, setData] = useState<string | null>(null);
@@ -8,7 +9,7 @@ export const Aidacs: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:9292/'); // Replace with your actual API endpoint
+                const response = await fetch(`${BACKEND_URL}/`); // Replace with your actual API endpoint
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
