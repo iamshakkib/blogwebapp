@@ -9,7 +9,7 @@ export const Aidacs: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/`); // Replace with your actual API endpoint
+                const response = await fetch(`${BACKEND_URL}/api/v1/posts`); // Replace with your actual API endpoint
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

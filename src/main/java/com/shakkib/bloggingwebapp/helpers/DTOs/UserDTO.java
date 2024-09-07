@@ -26,7 +26,6 @@ public class UserDTO {
     @Size(min=3, max = 10, message = "Password must be of min of 3 chars")
     private String password;
 
-    @NotBlank
     private String about;
 
     private Set<RoleDTO> roles = new HashSet<>();

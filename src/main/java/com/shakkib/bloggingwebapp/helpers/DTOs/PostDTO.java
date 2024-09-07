@@ -1,5 +1,7 @@
 package com.shakkib.bloggingwebapp.helpers.DTOs;
 
+import org.hibernate.annotations.CurrentTimestamp;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +16,7 @@ public class PostDTO {
 
     private String imageName;
 
+    @CurrentTimestamp
     private Date addedDate;
 
     private CategoryDTO categoryDTO;

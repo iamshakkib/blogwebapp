@@ -8,7 +8,8 @@ export const Auth = ({type}:{type: "signin" | "signup"}) => {
         name: "",
         email:"",
         password:"",
-        username:""
+        username:"",
+        about:""
     });
 
     async function sendRequest(){
@@ -57,6 +58,14 @@ export const Auth = ({type}:{type: "signin" | "signup"}) => {
                         setPostInputs(c=>({
                             ...postInputs,
                             username:e.target.value, //take input from user
+                        }))
+                    }} />
+                    </div>
+                    <div hidden={type==="signin"}>
+                    <LabelledInput label="Bio" placeholder="bio" onChange={(e)=>{
+                        setPostInputs(c=>({
+                            ...postInputs,
+                            about:e.target.value, //take input from user
                         }))
                     }} />
                     </div>
