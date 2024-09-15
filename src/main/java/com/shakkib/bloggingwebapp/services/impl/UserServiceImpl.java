@@ -35,8 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String registerNewUser(UserDTO user) {
+    public String registerNewUser(UserDTO user) throws Exception {
         User userEntity = this.modelMapper.map(user, User.class);
+        if(userRepository.existsByEmail(userEntity.getEmail())) throw new Exception("User with email "+userEntity.getEmail()+" already exists");
         userEntity.setPassword(this.passwordEncoder.encode(user.getPassword()));
         Role role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
         userEntity.getRoles().add(role);

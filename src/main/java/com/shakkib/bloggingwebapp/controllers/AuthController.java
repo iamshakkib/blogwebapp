@@ -14,7 +14,6 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -86,11 +85,15 @@ public class AuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDto) {
-		String userGotRegisteredOrNot = this.userService.registerNewUser(userDto);
-		String email = userDto.getEmail();
+		String userGotRegisteredOrNot=null;
 		try {
+			userGotRegisteredOrNot = this.userService.registerNewUser(userDto);
+			String email = userDto.getEmail();
 			aidacsMailSender.sendMail(email,"Thanks for registering to AIDACS", "Registration Completed");
 		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}catch (Exception e){
+			System.out.println("User already exists");
 			throw new RuntimeException(e);
 		}
 		return new ResponseEntity<String>(userGotRegisteredOrNot, HttpStatus.CREATED);
