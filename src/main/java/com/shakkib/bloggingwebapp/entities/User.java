@@ -1,6 +1,7 @@
 package com.shakkib.bloggingwebapp.entities;
 
 import jakarta.persistence.*;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -122,18 +123,5 @@ public class User implements UserDetails {
     }
 
     public User() {
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", about='" + about + '\'' +
-                ", posts=" + posts +
-                ", roles=" + roles +
-                '}';
     }
 }

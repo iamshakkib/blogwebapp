@@ -17,7 +17,7 @@ public class PostDTO {
     private String imageName;
 
     @CurrentTimestamp
-    private Date addedDate;
+    private Date creationTime;
 
     private CategoryDTO categoryDTO;
 
@@ -60,12 +60,12 @@ public class PostDTO {
         this.imageName = imageName;
     }
 
-    public Date getAddedDate() {
-        return addedDate;
+    public Date getCreationTime() {
+        return creationTime;
     }
 
-    public void setAddedDate(Date addedDate) {
-        this.addedDate = addedDate;
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
     }
 
     public CategoryDTO getCategoryDTO() {

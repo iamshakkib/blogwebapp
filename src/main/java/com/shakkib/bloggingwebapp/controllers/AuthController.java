@@ -1,6 +1,5 @@
 package com.shakkib.bloggingwebapp.controllers;
 
-import java.security.Principal;
 
 import com.shakkib.bloggingwebapp.entities.User;
 import com.shakkib.bloggingwebapp.exceptions.ApiException;
@@ -10,9 +9,12 @@ import com.shakkib.bloggingwebapp.helpers.Response.JwtAuthResponse;
 import com.shakkib.bloggingwebapp.repositories.UserRepository;
 import com.shakkib.bloggingwebapp.security.JwtTokenHelper;
 import com.shakkib.bloggingwebapp.services.UserService;
+import com.shakkib.bloggingwebapp.utilities.AidacsMailSender;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +45,14 @@ public class AuthController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private ModelMapper mapper;
+
+	@Autowired
+	private AidacsMailSender aidacsMailSender;
 
 	@PostMapping("/login")
 	public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws Exception {
@@ -77,19 +87,19 @@ public class AuthController {
 	@PostMapping("/register")
 	public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDto) {
 		String userGotRegisteredOrNot = this.userService.registerNewUser(userDto);
+		String email = userDto.getEmail();
+		try {
+			aidacsMailSender.sendMail(email,"Thanks for registering to AIDACS", "Registration Completed");
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}
 		return new ResponseEntity<String>(userGotRegisteredOrNot, HttpStatus.CREATED);
 	}
 
 	// get loggedin user data
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private ModelMapper mapper;
-
 	@GetMapping("/current-user/")
 	public ResponseEntity<UserDTO> getUser(@RequestParam String email) {
 		User user = this.userRepository.findByEmail(email).get();
 		return new ResponseEntity<UserDTO>(this.mapper.map(user, UserDTO.class), HttpStatus.OK);
 	}
-
 }

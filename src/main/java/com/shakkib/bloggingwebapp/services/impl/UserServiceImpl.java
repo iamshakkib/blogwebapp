@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public String registerNewUser(UserDTO user) {
         User userEntity = this.modelMapper.map(user, User.class);
-        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        userEntity.setPassword(this.passwordEncoder.encode(user.getPassword()));
         Role role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
         userEntity.getRoles().add(role);
         this.roleRepository.save(role);

@@ -1,37 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { BACKEND_URL } from '../config';
+import { BlogCard } from '../components/BlogCard';
+import { Appbar } from '../components/Appbar';
+import { useBlogs } from '../hooks';
 
-export const Aidacs: React.FC = () => {
-    const [data, setData] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/v1/posts`); // Replace with your actual API endpoint
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const result = await response.text();
-                setData(result);
-            } catch (error: any) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []); // Empty dependency array ensures this runs only once after the initial render
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-
+export const Aidacs = () => {
+    const {loading, blogs} = useBlogs();
+    if(loading){
+        return <div>
+            loading...
+        </div>
+    }
+    console.log(blogs.content[0]);
+    blogs.content.forEach((value: any,index: any) => {
+        console.log(`Element at index ${index} : ${value}`)
+    });
     return (
-        <div className="bg-slate-200 flex-col">
-            <h1>Aidacs</h1>
-            <p>{data}</p>
+        <div>
+            <Appbar/>
+            <div className='flex justify-center'>
+                <div className='max-w-xl'>
+                    {blogs.content.map(blog => <BlogCard id={blog.postId} name={blog.userDTO === null ? 'Anonymous' : blog.userDTO.name} title={blog.title} content={blog.content} addedDate={''} />)}
+                </div>
+            </div>
         </div>
     );
+};
+const getCurrentDate = () => {
+    const now = new Date();
+    return now.toLocaleDateString(); // You can customize the format as needed
 };

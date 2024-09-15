@@ -3,10 +3,14 @@ package com.shakkib.bloggingwebapp.security;
 import java.io.IOException;
 import java.util.Enumeration;
 
+import com.shakkib.bloggingwebapp.config.SecurityConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtTokenHelper jwtTokenHelper;
 
+	Logger logger = LogManager.getLogger(JwtAuthenticationFilter.class);
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		//		1. get token
@@ -41,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		// Bearer 2352523sdgsg
 
-		System.out.println(requestToken);
+		logger.log(Level.INFO,requestToken);
 
 		String username = null;
 
@@ -54,16 +59,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			try {
 				username = this.jwtTokenHelper.getUsernameFromToken(token);
 			} catch (IllegalArgumentException e) {
-				System.out.println("Unable to get Jwt token");
+				logger.log(Level.WARN,"Unable to get Jwt token");
 			} catch (ExpiredJwtException e) {
-				System.out.println("Jwt token has expired");
+				logger.log(Level.WARN,"Jwt token has expired");
 			} catch (MalformedJwtException e) {
-				System.out.println("invalid jwt");
+				logger.log(Level.WARN,"invalid jwt");
 
 			}
 
 		} else {
-			System.out.println("Jwt token does not begin with Bearer");
+			logger.log(Level.WARN,"Jwt token does not begin with Bearer");
 		}
 
 		// once we get the token , now validate
@@ -83,12 +88,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
 			} else {
-				System.out.println("Invalid jwt token");
+				logger.log(Level.WARN,"Invalid jwt token");
 			}
 
 		} else {
-			System.out.println("username is null or context is not null");
+			String[] allowedUrls = SecurityConfig.PUBLIC_URLS;
+			if(isEndpointAllowed(request)){
+				logger.log(Level.WARN,"Endpoint is allowed");
+			}else {
+				logger.log(Level.WARN,"username is null or context is not null");
+			}
 		}
 		filterChain.doFilter(request, response);
+	}
+
+	private boolean isEndpointAllowed(HttpServletRequest request) {
+		String[] allowedUrls = SecurityConfig.PUBLIC_URLS;
+		boolean flag = false;
+		for (String s:
+				allowedUrls) {
+			if(s.contains(request.getRequestURI()) || request.getMethod().equals("GET")){
+				flag = true;
+				break;
+			}
+		}
+		return flag;
 	}
 }

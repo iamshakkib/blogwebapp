@@ -15,10 +15,15 @@ export const Auth = ({type}:{type: "signin" | "signup"}) => {
     async function sendRequest(){
         try{
             const response = await axios.post(`${BACKEND_URL}/api/v1/auth/${type === "signin" ? "login" : "register"}`,postInputs);
-            const jwt = response.data;
-            localStorage.setItem("token",jwt);
-            navigate("/aidacs");
+            if(type==="signin"){
+                localStorage.setItem("token",response.data.token);
+                localStorage.setItem("username",response.data.user.name);
+                navigate("/aidacs");
+            }else{
+                navigate("/signin");
+            }
         }catch(e){
+            alert("Error while signing up")
             console.log(e);
         }
     }
@@ -27,11 +32,11 @@ export const Auth = ({type}:{type: "signin" | "signup"}) => {
 
             <div className="flex justify-center">
                 <div>
-                <div className="px-10">
+                <div className="px-10 ">
                     <div className="text-4xl font-extrabold">
-                        Create an Account
+                        {type==="signup" ? "Create an Account" : "SignIn To Your Account"}
                     </div>
-                    <div className="pl-9 mt-4 text-slate-500">
+                    <div className="pl-10 mt-4 text-slate-500 ">
                         {type==="signin"?"Don't have an account ?":"Already have an account ?"}
                         <Link className="pl-2 underline" to={type === "signin"?"/signup":"/signin"}>{type==="signin" ? "Sign up":"Sign in"}</Link>
                     </div>

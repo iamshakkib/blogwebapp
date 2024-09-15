@@ -1,6 +1,7 @@
 package com.shakkib.bloggingwebapp.entities;
 
 import jakarta.persistence.*;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +56,5 @@ public class Category {
     }
 
     public Category() {
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "categoryId=" + categoryId +
-                ", categoryTitle='" + categoryTitle + '\'' +
-                ", categoryDescription='" + categoryDescription + '\'' +
-                ", posts=" + posts +
-                '}';
     }
 }
