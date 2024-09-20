@@ -7,10 +7,12 @@ import com.shakkib.bloggingwebapp.helpers.DTOs.UserDTO;
 import com.shakkib.bloggingwebapp.helpers.Request.JwtAuthRequest;
 import com.shakkib.bloggingwebapp.helpers.Response.JwtAuthResponse;
 import com.shakkib.bloggingwebapp.repositories.UserRepository;
+import com.shakkib.bloggingwebapp.security.Blacklist;
 import com.shakkib.bloggingwebapp.security.JwtTokenHelper;
 import com.shakkib.bloggingwebapp.services.UserService;
 import com.shakkib.bloggingwebapp.utilities.AidacsMailSender;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +93,9 @@ public class AuthController {
 			String email = userDto.getEmail();
 			aidacsMailSender.sendMail(email,"Thanks for registering to AIDACS", "Registration Completed");
 		} catch (MessagingException e) {
-			throw new RuntimeException(e);
+			System.out.println(e);
 		}catch (Exception e){
-			System.out.println("User already exists");
-			throw new RuntimeException(e);
+			System.out.println("User already exists "+e);
 		}
 		return new ResponseEntity<String>(userGotRegisteredOrNot, HttpStatus.CREATED);
 	}
@@ -104,5 +105,16 @@ public class AuthController {
 	public ResponseEntity<UserDTO> getUser(@RequestParam String email) {
 		User user = this.userRepository.findByEmail(email).get();
 		return new ResponseEntity<UserDTO>(this.mapper.map(user, UserDTO.class), HttpStatus.OK);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletRequest request){
+		String authHeader = request.getHeader("Authorization");
+		String token = null;
+		if(!authHeader.isBlank() && !authHeader.isEmpty() && authHeader.startsWith("Bearer")){
+			token = authHeader.substring(7);
+		}
+		Blacklist.getInstance().addToBlackList(token);
+		return new ResponseEntity<String>("Successfully logged out",HttpStatus.OK);
 	}
 }

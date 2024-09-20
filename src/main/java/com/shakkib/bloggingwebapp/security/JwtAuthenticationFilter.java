@@ -105,8 +105,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private boolean isEndpointAllowed(HttpServletRequest request) {
 		String[] allowedUrls = SecurityConfig.PUBLIC_URLS;
 		boolean flag = false;
-		for (String s:
-				allowedUrls) {
+		for (String s:allowedUrls) {
 			if(s.contains(request.getRequestURI()) || request.getMethod().equals("GET")){
 				flag = true;
 				break;

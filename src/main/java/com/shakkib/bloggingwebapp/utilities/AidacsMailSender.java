@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component("aidacsMailSender")
@@ -14,7 +15,9 @@ public class AidacsMailSender {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Async
     public void sendMail(String to, String subject, String body) throws MessagingException {
+        System.out.println("enabled async");
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper;
         helper = new MimeMessageHelper(message, true);//true indicates multipart message
